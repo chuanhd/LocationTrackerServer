@@ -118,7 +118,8 @@ function Login(req, res, next) {
       .then(function (data){
         res.status(200)
           .json({
-            status: 'success',
+            status: 'Login success',
+            code: 'SUCCESS',
             data: data
           });
       })
@@ -127,7 +128,8 @@ function Login(req, res, next) {
           .then(function(data){
               res.status(200)
                 .json({
-                    status: 'User not exists',
+                    status: 'User not exists and created in database',
+                    code: 'USER_NOT_EXISTS',
                     data: data
                 });
               });
@@ -143,8 +145,8 @@ function createGroup(req, res, next) {
     .then(function () {
       res.status(200)
         .json({
-          status: 'success',
-          message: 'Created group'
+          status: 'Create group success',
+          code: 'SUCCESS'
         });
     })
     .catch(function (err) {
@@ -157,7 +159,8 @@ function listGroup(req, res, next){
     .then(function (data) {
         res.status(200)
           .json({
-            status: 'success',
+            status: 'Get group of user success',
+            code: 'SUCCESS',
             data: data
           });
     })
@@ -166,11 +169,12 @@ function listGroup(req, res, next){
     });
 }
 function selectGroup(req, res, next){
-  db.one('select username, lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.body.groupid])
+  db.one('select userid, username, lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.body.groupid])
     .then(function (data) {
         res.status(200)
           .json({
-            status: 'success',
+            status: 'Get information of group success',
+            code: 'SUCCESS',
             data: data
           });
     })
@@ -180,13 +184,13 @@ function selectGroup(req, res, next){
 }
 
 function addGroupMember(req, res, next) {
-  db.one('INSERT INTO groupmember (groupid, userid) SELECT grouplist.groupid, userprofile.userid FROM grouplist, userprofile WHERE grouplist.groupname=$1 AND userprofile.phonenumber=$2;',
+  db.one('INSERT INTO groupmember (groupid, userid) SELECT grouplist.groupid, userprofile.userid FROM grouplist, userprofile WHERE grouplist.groupid=$1 AND userprofile.phonenumber=$2;',
   [req.body.groupname, req.body.phonenumber])
     .then(function () {
         res.status(200)
           .json({
-            status: 'success',
-            message: 'inserted'
+            status: 'Add new member success',
+            code: 'SUCCESS'
           });
     })
     .catch(function (err) {
@@ -200,9 +204,42 @@ function deleteGroupMember(req, res, next) {
     .then(function (result) {
       res.status(200)
         .json({
-          status: 'success',
+          status: 'Delete success',
+          code: 'SUCCESS',
           message: `Removed ${result.rowCount} user`
         });
+    })
+    .catch(function (err) {
+      return next(err);
+    });
+}
+
+function selectMemberLocation(req, res, next){
+  db.one('select lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1 and groupmember.userid=$2',
+  [req.body.groupid, req.body.userid])
+    .then(function (data) {
+        res.status(200)
+          .json({
+            status: 'Get member location success',
+            code: 'SUCCESS',
+            data: data
+          });
+    })
+    .catch(function (err) {
+      return next(err);
+    });
+}
+
+function memberInfo(req, res, next){
+  db.one('select username, userimage, email, phonenumber from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1 and groupmember.userid=$2',
+  [req.body.groupid, req.body.userid])
+    .then(function (data) {
+        res.status(200)
+          .json({
+            status: 'Get member info success',
+            code: 'SUCCESS',
+            data: data
+          });
     })
     .catch(function (err) {
       return next(err);
@@ -216,8 +253,8 @@ function updateUser(req, res, next) {
     .then(function () {
       res.status(200)
         .json({
-          status: 'success',
-          message: 'Updated user'
+          status: 'Updated information',
+          code: 'SUCCESS'
         });
     })
     .catch(function (err) {
@@ -231,8 +268,8 @@ function updateLocation(req, res, next) {
     .then(function () {
       res.status(200)
         .json({
-          status: 'success',
-          message: 'Updated location'
+          status: 'Updated current location',
+          code: 'SUCCESS'
         });
     })
     .catch(function (err) {
@@ -246,7 +283,8 @@ function removeUser(req, res, next) {
     .then(function (result) {
       res.status(200)
         .json({
-          status: 'success',
+          status: 'Deleted user',
+          code: 'SUCCESS',
           message: `Removed ${result.rowCount} user`
         });
     })
@@ -261,8 +299,8 @@ db.query('INSERT INTO locationpick(lat, lon, userid, groupid) values($1,$2,(SELE
   .then(function () {
     res.status(200)
       .json({
-        status: 'success',
-        message: 'Done'
+        status: 'Inserted location pick',
+        code: 'SUCCESS'
       });
     })
     .catch(function (err) {
@@ -277,8 +315,24 @@ db.query('INSERT INTO imagesupload(url, lat, lon, userid) values($1,$2,$3,(SELEC
   .then(function () {
     res.status(200)
       .json({
-        status: 'success',
-        message: 'Done'
+        status: 'Inserted image',
+        code: 'SUCCESS'
+      });
+    })
+    .catch(function (err) {
+      return next(err);
+    });
+    console.log(req.file);
+}
+
+function uploadAvatar(req, res, next){
+db.query('update userprofile set userimage=$1 where deviceid=$2',
+['http://localhost:3000/images/'+req.file.filename, req.body.deviceid])
+  .then(function () {
+    res.status(200)
+      .json({
+        status: 'Inserted avatar',
+        code: 'SUCCESS'
       });
     })
     .catch(function (err) {
@@ -316,5 +370,8 @@ module.exports = {
   selectGroup: selectGroup,
   uploadImage: uploadImage,
   listGroup: listGroup,
-  deleteGroupMember: deleteGroupMember
+  deleteGroupMember: deleteGroupMember,
+  uploadAvatar: uploadAvatar,
+  selectMemberLocation: selectMemberLocation,
+  memberInfo: memberInfo
 };

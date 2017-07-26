@@ -16,6 +16,8 @@ router.post('/api/contact/', db.CheckContacts);
 router.post('/api/getgroup/', db.selectGroup);
 router.post('/api/listgroup/', db.listGroup);
 router.delete('/api/deletemember/:userid', db.deleteGroupMember);
+router.post('/api/memberlocation', db.selectMemberLocation);
+router.post('/api/memberinfo', db.memberInfo);
 
 var multer  = require('multer');
 var storage = multer.diskStorage({
@@ -28,7 +30,7 @@ var storage = multer.diskStorage({
 });
 
 var upload = multer({ storage: storage });
-
+router.post('/upload/avatar', upload.single('image'), db.uploadAvatar)
 router.post('/upload', upload.single('image'), db.uploadImage)
 
 module.exports = router;
