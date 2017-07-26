@@ -13,5 +13,22 @@ router.post('/api/user/location/', db.updateLocation);
 router.post('api/user/addGroupMember', db.addGroupMember);
 router.post('/api/group', db.createGroup);
 router.post('/api/contact/', db.CheckContacts);
+router.post('/api/getgroup/', db.selectGroup);
+router.post('/api/listgroup/', db.listGroup);
+router.delete('/api/deletemember/:userid', db.deleteGroupMember);
+
+var multer  = require('multer');
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/images')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now()+'.jpg')
+  }
+});
+
+var upload = multer({ storage: storage });
+
+router.post('/upload', upload.single('image'), db.uploadImage)
 
 module.exports = router;

@@ -10,6 +10,11 @@ var users = require('./routes/users');
 
 var app = express();
 
+app.use(bodyParser.json({limit:'50mb'}));
+app.use(bodyParser.urlencoded({extended:false, limit:'50mb', parameterLimit: 1000000}));
+
+/// Include the express body parser
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -55,6 +60,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;
