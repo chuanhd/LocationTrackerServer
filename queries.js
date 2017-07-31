@@ -9,10 +9,19 @@ var options = {
   // Initialization Options
   promiseLib: promise
 };
-//pg://postgres:Thutrang91@localhost:5432/template_postgis
+
 var pgp = require('pg-promise')(options);
-var connectionString = 'postgres://postgres:1@localhost:5432/LocationTracker';
-var db = pgp(connectionString);
+
+const cn = {
+    host: 'ec2-50-17-217-166.compute-1.amazonaws.com',
+    port: 5432,
+    database: 'd217k12g72omjh',
+    user: 'jysdlhdxloiocr',
+    password: '5ce84a7775db9e4d22de94f70403d916567ca3c1c7a9f0be6134d80fb5178703'
+};
+
+pgp.pg.defaults.ssl = true;
+const db = pgp(cn);
 
 var server = http.createServer(app)
   , io = require('socket.io').listen(server);
