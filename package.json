@@ -6,10 +6,12 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "aws-sdk": "^2.93.0",
     "bluebird": "^3.3.4",
     "body-parser": "~1.13.2",
     "cookie-parser": "~1.3.5",
     "debug": "~2.2.0",
+    "ejs": "^2.5.7",
     "express": "~4.13.1",
     "jade": "~1.11.0",
     "morgan": "~1.6.1",
