@@ -3,7 +3,8 @@ var aws  = require('aws-sdk');
 var router = express.Router();
 
 var db = require('../queries');
-
+var multer  = require('multer');
+var multerS3 = require('multer-s3');
 
 //router.get('/api/user/profile', db.getOneUser);
 //router.get('/api/user/:id', db.getSingleUser);
@@ -26,48 +27,52 @@ console.log(process.env.PORT)
 const app = express();
 app.use(express.static('./public/images'));
 app.engine('html', require('ejs').renderFile)
-app.listen(3000);
+// app.listen(3000);
 
 /*
  * Load the S3 information from the environment variables.
  */
 const S3_BUCKET = process.env.S3_BUCKET;
 
+console.log("s3_bucket: " + S3_BUCKET);
+
 function uploadImage(req, res, next){
-  const s3 = new aws.S3();
-  // const fileType = req.query['file-type'];
-  // const fileName = req.query['file-name'] + '_' + Date.now() + fileType;
-  const fileType = '.png';
-  const fileName = Date.now() + fileType;
+  // const s3 = new aws.S3();
+  // // const fileType = req.query['file-type'];
+  // // const fileName = req.query['file-name'] + '_' + Date.now() + fileType;
+  // const fileType = '.png';
+  // const fileName = Date.now() + fileType;
   
-  console.log("s3_bucket: " + S3_BUCKET);
+  // console.log("s3_bucket: " + S3_BUCKET);
 
-  const s3Params = {
-    Bucket: S3_BUCKET,
-    Key: fileName,
-    Expires: 60,
-    ContentType: fileType,
-    ACL: 'public-read'
-  };
+  // const s3Params = {
+  //   Bucket: S3_BUCKET,
+  //   Key: fileName,
+  //   Expires: 60,
+  //   ContentType: fileType,
+  //   ACL: 'public-read'
+  // };
 
-  s3.getSignedUrl('putObject', s3Params, (err, data) => {
-    if(err){
-      console.log(err);
-      return res.end();
-    }
-    const returnData = {
-      signedRequest: data,
-      url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
-    };
-    // res.write(JSON.stringify(returnData));
-    // res.end();
-    console.log("imgurl " + returnData.url);
+  // s3.getSignedUrl('putObject', s3Params, (err, data) => {
+  //   if(err){
+  //     console.log(err);
+  //     return res.end();
+  //   }
+  //   const returnData = {
+  //     signedRequest: data,
+  //     url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
+  //   };
+  //   // res.write(JSON.stringify(returnData));
+  //   // res.end();
+  //   console.log("imgurl " + returnData.url);
 
-    db.uploadAvatar(req, returnData.url, res, next)
+  //   db.uploadAvatar(req, returnData.url, res, next)
 
-  });
-  console.log(req.file);
+  // });
+  console.log("req.body deviceid: " + req.body.deviceid);
+  console.dir(req.params);
 }
+
 
 // var multer  = require('multer');
 // var storage = multer.diskStorage({
@@ -79,11 +84,10 @@ function uploadImage(req, res, next){
 //   }
 // });
 
-// var upload = multer({ storage: storage });
 // router.post('/upload/avatar', upload.single('image'), db.uploadAvatar)
 // router.post('/upload', upload.single('image'), db.uploadImage)
 
-router.post('/upload/avatar', uploadImage)
-router.post('/upload', uploadImage)
+router.post('/upload/avatar', db.uploadAvatar)
+router.post('/upload', db.uploadImage)
 
 module.exports = router;
