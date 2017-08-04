@@ -337,7 +337,7 @@ db.query('INSERT INTO imagesupload(url, lat, lon, userid) values($1,$2,$3,(SELEC
 function uploadAvatar(req, res, next){
   console.log('req url: ' + req.file.path);
   db.query('update userprofile set userimage=$1 where deviceid=$2',
-[req.body.image, req.body.deviceid])
+[req.body.userimage, req.body.deviceid])
   .then(function () {
     res.status(200)
       .json({
