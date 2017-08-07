@@ -15,11 +15,11 @@ router.post('/api/user/location/', db.updateLocation);
 router.post('api/user/addGroupMember', db.addGroupMember);
 router.post('/api/group', db.createGroup);
 router.post('/api/contact/', db.CheckContacts);
-router.post('/api/getgroup/', db.selectGroup);
-router.post('/api/listgroup/', db.listGroup);
+router.get('/api/getgroup/', db.selectGroup);
+router.get('/api/listgroup/', db.listGroup);
 router.delete('/api/deletemember/:userid', db.deleteGroupMember);
-router.post('/api/memberlocation', db.selectMemberLocation);
-router.post('/api/memberinfo', db.memberInfo);
+router.get('/api/memberlocation', db.selectMemberLocation);
+router.get('/api/memberinfo', db.memberInfo);
 
 
 console.log(process.env.PORT)
@@ -42,7 +42,7 @@ function uploadImage(req, res, next){
   // // const fileName = req.query['file-name'] + '_' + Date.now() + fileType;
   // const fileType = '.png';
   // const fileName = Date.now() + fileType;
-  
+
   // console.log("s3_bucket: " + S3_BUCKET);
 
   // const s3Params = {
