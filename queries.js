@@ -147,10 +147,10 @@ function Login(req, res, next) {
 
 function createGroup(req, res, next) {
   console.log(req.body.groupname)
-  //db.query('insert into grouplist(groupname, description, usercreate) value($1,$2,$3)',[req.body.groupname,
-  //req.body.description, req.body.usercreate])
-  db.none('insert into grouplist(groupname, description, usercreate)' +
-      'values(${groupname}, ${description}, ${usercreate})',req.body)
+  db.query('insert into grouplist(groupname, description, deviceid) values($1,$2,$3)',[req.body.groupname,
+  req.body.description, req.body.deviceid])
+  //db.none('insert into grouplist(groupname, description, usercreate)' +
+    //  'values(${groupname}, ${description}, ${usercreate})',req.body)
     .then(function () {
       res.status(200)
         .json({
