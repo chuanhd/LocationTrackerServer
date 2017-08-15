@@ -174,7 +174,11 @@ function listGroup(req, res, next){
           });
     })
     .catch(function (err) {
-      return next(err);
+      res.status(200)
+        .json({
+            status: 'Group not exists',
+            code: 'GROUP_NOT_EXISTS'
+        });
     });
 }
 function selectGroup(req, res, next){
