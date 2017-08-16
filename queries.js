@@ -165,6 +165,7 @@ function createGroup(req, res, next) {
 
 }
 function listGroup(req, res, next){
+  
   db.one('select groupname, grouplist.groupid from groupmember, grouplist where grouplist.groupid=groupmember.groupid and groupmember.userid=$1', [req.body.deviceid])
     .then(function (data) {
         res.status(200)
@@ -183,7 +184,8 @@ function listGroup(req, res, next){
     });
 }
 function selectGroup(req, res, next){
-  db.one('select groupmember.userid, username, lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.body.groupid])
+  console.log("group: " + req.query.groupid)
+  db.one('select groupmember.userid, username, lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.query.groupid])
     .then(function (data) {
         res.status(200)
           .json({
@@ -195,7 +197,7 @@ function selectGroup(req, res, next){
     .catch(function (err) {
       res.status(200)
       .json({
-          status: 'Group not exists',
+          status: 'Group dont have any members :(',
           code: 'GROUP_NOT_EXISTS'
       });
     });
