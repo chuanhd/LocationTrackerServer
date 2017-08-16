@@ -147,15 +147,16 @@ function Login(req, res, next) {
 
 function createGroup(req, res, next) {
   console.log(req.body.groupname)
-  db.query('insert into grouplist(groupname, description, deviceid) values($1,$2,$3)',[req.body.groupname,
+  db.query('insert into grouplist(groupname, description, deviceid) values($1,$2,$3) returning groupid',[req.body.groupname,
   req.body.description, req.body.deviceid])
   //db.none('insert into grouplist(groupname, description, usercreate)' +
     //  'values(${groupname}, ${description}, ${usercreate})',req.body)
-    .then(function () {
+    .then(function (data) {
       res.status(200)
         .json({
           status: 'Create group success',
-          code: 'SUCCESS'
+          code: 'SUCCESS',
+          data: data
         });
     })
     .catch(function (err) {
@@ -182,7 +183,7 @@ function listGroup(req, res, next){
     });
 }
 function selectGroup(req, res, next){
-  db.one('select grouplist.userid, username, lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.body.groupid])
+  db.one('select groupmember.userid, username, lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.body.groupid])
     .then(function (data) {
         res.status(200)
           .json({
@@ -192,7 +193,11 @@ function selectGroup(req, res, next){
           });
     })
     .catch(function (err) {
-      return next(err);
+      res.status(200)
+      .json({
+          status: 'Group not exists',
+          code: 'GROUP_NOT_EXISTS'
+      });
     });
 }
 
