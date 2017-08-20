@@ -122,8 +122,8 @@ function CheckContacts(req, res, next){
 //Login using deviceid
 function Login(req, res, next) {
     //userID = req.params.id;
-    console.log(req.body.deviceid);
-    db.one('select * from userprofile where deviceid = $1', [req.body.deviceid])
+    console.log(req.body.userid);
+    db.one('select * from userprofile where userid = $1', [req.body.userid])
       .then(function (data){
         res.status(200)
           .json({
@@ -133,7 +133,7 @@ function Login(req, res, next) {
           });
       })
       .catch(function (err) {
-        db.query('insert into userprofile(deviceid) values($1)', [req.body.deviceid])
+        db.query('insert into userprofile(userid) values($1)', [req.body.userid])
           .then(function(data){
               res.status(200)
                 .json({
@@ -182,8 +182,8 @@ function createGroup(req, res, next) {
     //generate fail
   })
   .catch(function(err){
-    db.query('insert into grouplist(groupid, groupname, description, deviceid) values($1,$2,$3,$4) returning groupid',[numberGenerate, req.body.groupname,
-  req.body.description, req.body.deviceid])
+    db.query('insert into grouplist(groupid, groupname, description, userid) values($1,$2,$3,$4) returning groupid',[numberGenerate, req.body.groupname,
+  req.body.description, req.body.userid])
   
   //db.none('insert into grouplist(groupname, description, usercreate)' +
     //  'values(${groupname}, ${description}, ${usercreate})',req.body)
@@ -194,13 +194,16 @@ function createGroup(req, res, next) {
           code: 'SUCCESS',
           data: data
         });
-        db.query('INSERT INTO groupmember (groupid, userid) values($1, $2)',[data[0].groupid, req.body.deviceid])
+        db.query('INSERT INTO groupmember (groupid, userid) values($1, $2)',[data[0].groupid, req.body.userid])
+        .then(function(data){
+          console.log('runrun')
+        })
     })
   })
 }
 function listGroup(req, res, next){
-
-  db.one('select groupname, grouplist.groupid from groupmember, grouplist where grouplist.groupid=groupmember.groupid and groupmember.userid=$1', [req.query.deviceid])
+  console.log(req.query.userid)
+  db.any('select groupname, grouplist.groupid from groupmember, grouplist where grouplist.groupid=groupmember.groupid and groupmember.userid=$1', [req.query.userid])
     .then(function (data) {
         res.status(200)
           .json({
@@ -320,9 +323,9 @@ function memberInfo(req, res, next){
 }
 
 function updateUser(req, res, next) {
-  db.query('update userprofile set username=$1, userimage=$2, email=$3, lat=$4, lon=$5, phonenumber=$6 where deviceid=$7',
+  db.query('update userprofile set username=$1, userimage=$2, email=$3, lat=$4, lon=$5, phonenumber=$6 where userid=$7',
     [req.body.username, req.body.userimage, req.body.email, req.body.lat, req.body.lon,
-      req.body.phonenumber, req.body.deviceid])
+      req.body.phonenumber, req.body.userid])
     .then(function () {
       res.status(200)
         .json({
@@ -336,8 +339,8 @@ function updateUser(req, res, next) {
 }
 
 function updateLocation(req, res, next) {
-  db.query('update userprofile set lat=$1, lon=$2 where deviceid=$3',
-    [req.body.lat, req.body.lon,req.body.deviceid])
+  db.query('update userprofile set lat=$1, lon=$2 where userid=$3',
+    [req.body.lat, req.body.lon,req.body.userid])
     .then(function () {
       res.status(200)
         .json({
@@ -352,7 +355,7 @@ function updateLocation(req, res, next) {
 
 function removeUser(req, res, next) {
   var userID = req.params.id;
-  db.result('delete from userprofile where deviceid = $1', userID)
+  db.result('delete from userprofile where userid = $1', userID)
     .then(function (result) {
       res.status(200)
         .json({
@@ -367,8 +370,8 @@ function removeUser(req, res, next) {
 }
 
 function locationPick(req, res, next){
-db.query('INSERT INTO locationpick(lat, lon, userid, groupid) values($1,$2,(SELECT userid FROM userprofile WHERE deviceid=$3),$4);',
-[req.body.lat, req.body.lon, req.body.deviceid, req.body.groupid])
+db.query('INSERT INTO locationpick(lat, lon, userid, groupid) values($1,$2,$3,$4);',
+[req.body.lat, req.body.lon, req.body.userid, req.body.groupid])
   .then(function () {
     res.status(200)
       .json({
@@ -383,8 +386,8 @@ db.query('INSERT INTO locationpick(lat, lon, userid, groupid) values($1,$2,(SELE
 }
 
 function uploadImage(req, res, next){
-db.query('INSERT INTO imagesupload(url, lat, lon, userid) values($1,$2,$3,(SELECT userid FROM userprofile WHERE deviceid=$4));',
-[req.body.image, req.body.lat, req.body.lon, req.body.deviceid])
+db.query('INSERT INTO imagesupload(url, lat, lon, userid) values($1,$2,$3,$4);',
+[req.body.image, req.body.lat, req.body.lon, req.body.userid])
   .then(function () {
     res.status(200)
       .json({
@@ -400,8 +403,8 @@ db.query('INSERT INTO imagesupload(url, lat, lon, userid) values($1,$2,$3,(SELEC
 
 function uploadAvatar(req, res, next){
   console.log('req url: ' + req.file.path);
-  db.query('update userprofile set userimage=$1 where deviceid=$2',
-[req.body.userimage, req.body.deviceid])
+  db.query('update userprofile set userimage=$1 where userid=$2',
+[req.body.userimage, req.body.userid])
   .then(function () {
     res.status(200)
       .json({
