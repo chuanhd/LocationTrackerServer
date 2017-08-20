@@ -106,12 +106,12 @@ io.sockets.on('connection', function (socket) {
 }*/
 
 function CheckContacts(req, res, next){
-      db.one('select username, phonenumber, email from userprofile where email=$1 or phonenumber=$2', [req.body.email, req.body.phonenumber])
+      db.one('select userid from userprofile where email=$1 or phonenumber=$2', [req.query.email, req.query.phonenumber])
         .then(function (data){
           res.status(200)
             .json({
               status: 'have contact',
-              data: data,
+              data: datas
             });
         })
         .catch(function (err) {
@@ -145,10 +145,46 @@ function Login(req, res, next) {
         });
 }
 
+
+
 function createGroup(req, res, next) {
-  console.log(req.body.groupname)
-  db.query('insert into grouplist(groupname, description, deviceid) values($1,$2,$3) returning groupid',[req.body.groupname,
+  //console.log(req.body.groupname)
+  function IDGenerator() {
+	 
+		 this.length = 8;
+		 this.timestamp = +new Date;
+		 
+		 var _getRandomInt = function( min, max ) {
+			return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
+		 }
+		 
+		 this.generate = function() {
+			 var ts = this.timestamp.toString();
+			 var parts = ts.split( "" ).reverse();
+			 var id = "";
+			 
+			 for( var i = 0; i < this.length; ++i ) {
+				var index = _getRandomInt( 0, parts.length - 1 );
+				id += parts[index];	 
+			 }
+			 
+			 return id;
+    }
+  }
+  var insertCreator = function(_groupId, _deviceId, _callback) {
+    
+  }
+  var generator = new IDGenerator();
+  var numberGenerate = generator.generate();
+  console.log(numberGenerate)
+  db.one('select * from grouplist where groupid=$1',[numberGenerate])
+  .then(function(){
+    //generate fail
+  })
+  .catch(function(err){
+    db.query('insert into grouplist(groupid, groupname, description, deviceid) values($1,$2,$3,$4) returning groupid',[numberGenerate, req.body.groupname,
   req.body.description, req.body.deviceid])
+  
   //db.none('insert into grouplist(groupname, description, usercreate)' +
     //  'values(${groupname}, ${description}, ${usercreate})',req.body)
     .then(function (data) {
@@ -158,15 +194,13 @@ function createGroup(req, res, next) {
           code: 'SUCCESS',
           data: data
         });
+        db.query('INSERT INTO groupmember (groupid, userid) values($1, $2)',[data[0].groupid, req.body.deviceid])
     })
-    .catch(function (err) {
-      return next(err);
-    });
-
+  })
 }
 function listGroup(req, res, next){
-  
-  db.one('select groupname, grouplist.groupid from groupmember, grouplist where grouplist.groupid=groupmember.groupid and groupmember.userid=$1', [req.body.deviceid])
+
+  db.one('select groupname, grouplist.groupid from groupmember, grouplist where grouplist.groupid=groupmember.groupid and groupmember.userid=$1', [req.query.deviceid])
     .then(function (data) {
         res.status(200)
           .json({
@@ -203,9 +237,28 @@ function selectGroup(req, res, next){
     });
 }
 
+function searchUsers(req, res, next){
+  db.one('select userid, username from userprofile where email=%$1% or phonenumber=%$2%',[req.query.email, req.query.phonenumber])
+  .then(function(data){
+    res.status(200)
+          .json({
+            status: 'Searching success',
+            code: 'SUCCESS',
+            data: data
+          });
+  })
+  .catch(function(err){
+    res.status(200)
+      .json({
+          status: 'No matching user',
+          code: 'USER_NOT_EXISTS'
+      });
+  });
+}
+
 function addGroupMember(req, res, next) {
-  db.one('INSERT INTO groupmember (groupid, userid) SELECT grouplist.groupid, userprofile.userid FROM grouplist, userprofile WHERE grouplist.groupid=$1 AND userprofile.phonenumber=$2;',
-  [req.body.groupname, req.body.phonenumber])
+  db.one('INSERT INTO groupmember (groupid, userid) values($1,$2)',
+  [req.body.groupid, req.body.userid])
     .then(function () {
         res.status(200)
           .json({
@@ -236,7 +289,7 @@ function deleteGroupMember(req, res, next) {
 
 function selectMemberLocation(req, res, next){
   db.one('select lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1 and groupmember.userid=$2',
-  [req.body.groupid, req.body.userid])
+  [req.query.groupid, req.query.userid])
     .then(function (data) {
         res.status(200)
           .json({
@@ -252,7 +305,7 @@ function selectMemberLocation(req, res, next){
 
 function memberInfo(req, res, next){
   db.one('select username, userimage, email, phonenumber from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1 and groupmember.userid=$2',
-  [req.body.groupid, req.body.userid])
+  [req.query.groupid, req.query.userid])
     .then(function (data) {
         res.status(200)
           .json({
@@ -395,5 +448,6 @@ module.exports = {
   uploadAvatar: uploadAvatar,
   uploadImage: uploadImage,
   selectMemberLocation: selectMemberLocation,
-  memberInfo: memberInfo
+  memberInfo: memberInfo,
+  searchUsers: searchUsers
 };
