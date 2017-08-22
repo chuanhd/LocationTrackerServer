@@ -222,7 +222,7 @@ function listGroup(req, res, next){
 }
 function selectGroup(req, res, next){
   console.log("group: " + req.query.groupid)
-  db.one('select groupmember.userid, username, lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.query.groupid])
+  db.any('select groupmember.userid, username, lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.query.groupid])
     .then(function (data) {
         res.status(200)
           .json({
