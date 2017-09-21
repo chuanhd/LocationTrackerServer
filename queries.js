@@ -241,7 +241,7 @@ function selectGroup(req, res, next){
 }
 
 function searchUsers(req, res, next){
-  db.one('select userid, username from userprofile where email=%$1% or phonenumber=%$2%',[req.query.email, req.query.phonenumber])
+  db.any('select userid, username from userprofile where email=%$1% or phonenumber=%$2%',[req.query.email, req.query.phonenumber])
   .then(function(data){
     res.status(200)
           .json({
