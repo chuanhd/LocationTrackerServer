@@ -205,18 +205,26 @@ function listGroup(req, res, next){
   console.log(req.query.userid)
   db.any('select groupname, grouplist.groupid from groupmember, grouplist where grouplist.groupid=groupmember.groupid and groupmember.userid=$1', [req.query.userid])
     .then(function (data) {
+      if (data != null && data != '')  {
         res.status(200)
           .json({
             status: 'Get group of user success',
             code: 'SUCCESS',
             data: data
           });
+        } else {
+          res.status(200)
+          .json({
+              status: 'Group not exists',
+              code: 'GROUP_NOT_EXISTS'
+          });
+        }
     })
     .catch(function (err) {
       res.status(200)
         .json({
-            status: 'Group not exists',
-            code: 'GROUP_NOT_EXISTS'
+            status: 'Failure. Something wrongs',
+            code: 'FAILURE'
         });
     });
 }
@@ -224,38 +232,49 @@ function selectGroup(req, res, next){
   console.log("group: " + req.query.groupid)
   db.any('select groupmember.userid, username, userimage, lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.query.groupid])
     .then(function (data) {
-        res.status(200)
+      if (data != null && data != '')  {
+      res.status(200)
           .json({
             status: 'Get information of group success',
             code: 'SUCCESS',
             data: data
           });
+      }
+      else{
+        res.status(200)
+        .json({
+            status: 'Group dont have any members :(',
+            code: 'GROUP_NOT_EXISTS'
+        });
+      }
     })
     .catch(function (err) {
-      res.status(200)
-      .json({
-          status: 'Group dont have any members :(',
-          code: 'GROUP_NOT_EXISTS'
-      });
+      return next(err);
     });
 }
 
 function searchUsers(req, res, next){
-  db.any('select userid, username from userprofile where email=%$1% or phonenumber=%$2%',[req.query.email, req.query.phonenumber])
+  console.log("search string: " + req.query.search_string)
+  // console.log("query string: " + )
+  db.any('select userid, username, userimage from userprofile where email like $1 or phonenumber like $2',['%'+req.query.search_string+'%', '%'+req.query.search_string+'%'])
   .then(function(data){
+    if (data!= null && data != ''){
     res.status(200)
           .json({
             status: 'Searching success',
             code: 'SUCCESS',
             data: data
           });
+        }else{
+          res.status(200)
+          .json({
+              status: 'No matching user',
+              code: 'USER_NOT_EXISTS'
+          });
+        }
   })
   .catch(function(err){
-    res.status(200)
-      .json({
-          status: 'No matching user',
-          code: 'USER_NOT_EXISTS'
-      });
+    return next(err);
   });
 }
 
