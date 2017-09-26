@@ -335,7 +335,7 @@ function selectMemberLocation(req, res, next){
 }
 
 function memberInfo(req, res, next){
-  db.one('select username, userimage, email, phonenumber from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1 and groupmember.userid=$2',
+  db.one('select username, userimage, email, phonenumber from userprofile where userprofile.userid=$1',
   [req.query.groupid, req.query.userid])
     .then(function (data) {
         res.status(200)
