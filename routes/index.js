@@ -15,13 +15,13 @@ router.post('/api/user/location/', db.updateLocation);
 router.post('/api/addGroupMember', db.addGroupMember);
 router.post('/api/group', db.createGroup);
 router.get('/api/checkcontacts/', db.CheckContacts);
-router.get('/api/getgroup', db.selectGroup);
+router.get('/api/getgroup', db.selectGroup); 
 router.get('/api/listgroup/', db.listGroup);
 router.delete('/api/deletemember/:userid', db.deleteGroupMember);
 router.get('/api/memberlocation', db.selectMemberLocation);
 router.get('/api/memberinfo', db.memberInfo);
 router.get('/api/searchuser/', db.searchUsers);
-
+router.post('/api/locationPick/', db.locationPick);
 
 console.log(process.env.PORT)
 

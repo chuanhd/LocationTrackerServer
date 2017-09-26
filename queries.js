@@ -194,7 +194,7 @@ function createGroup(req, res, next) {
           code: 'SUCCESS',
           data: data
         });
-        db.query('INSERT INTO groupmember (groupid, userid) values($1, $2)',[data[0].groupid, req.body.userid])
+        db.query('INSERT INTO groupmember (groupid, userid, master) values($1, $2, True)',[data[0].groupid, req.body.userid])
         .then(function(data){
           console.log('runrun')
         })
@@ -279,17 +279,26 @@ function searchUsers(req, res, next){
 }
 
 function addGroupMember(req, res, next) {
-  console.log(req.body.groupid);
-  db.query('INSERT INTO groupmember(groupid, userid) values($1,$2)',[req.body.groupid, req.body.userid])
-  .then(function(data) {
-      res.status(200)
-        .json({
-            status: 'Add new member success',
-            code: 'SUCCESS'
-        });
-    })
-    .catch(function (err) {
-      return next(err);
+  db.one('select * from groupmember where groupid = $1 and userid = $2', [req.body.groupid, req.body.userid])
+  .then(function (){
+    res.status(200)
+      .json({
+        status: 'User is already in group',
+        code: 'USER_IN_GROUP'
+      });
+  })
+  .catch(function (err) {
+    db.query('INSERT INTO groupmember(groupid, userid, master) values($1,$2, False)',[req.body.groupid, req.body.userid])
+    .then(function(data) {
+        res.status(200)
+          .json({
+              status: 'Add new member success',
+              code: 'SUCCESS'
+          });
+      })
+      .catch(function (err) {
+        return next(err);
+      });
     });
 }
 
@@ -471,5 +480,6 @@ module.exports = {
   uploadImage: uploadImage,
   selectMemberLocation: selectMemberLocation,
   memberInfo: memberInfo,
-  searchUsers: searchUsers
+  searchUsers: searchUsers, 
+  locationPick: locationPick
 };
