@@ -279,14 +279,14 @@ function searchUsers(req, res, next){
 }
 
 function addGroupMember(req, res, next) {
-  db.one('INSERT INTO groupmember (groupid, userid) values($1,$2)',
-  [req.body.groupid, req.body.userid])
-    .then(function () {
-        res.status(200)
-          .json({
+  console.log(req.body.groupid);
+  db.query('INSERT INTO groupmember(groupid, userid) values($1,$2)',[req.body.groupid, req.body.userid])
+  .then(function(data) {
+      res.status(200)
+        .json({
             status: 'Add new member success',
             code: 'SUCCESS'
-          });
+        });
     })
     .catch(function (err) {
       return next(err);

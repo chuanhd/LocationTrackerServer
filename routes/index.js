@@ -12,7 +12,7 @@ router.post('/api/user/', db.Login);
 router.post('/api/user/update/', db.updateUser);
 router.delete('/api/user/:id', db.removeUser);
 router.post('/api/user/location/', db.updateLocation);
-router.post('api/user/addGroupMember', db.addGroupMember);
+router.post('/api/addGroupMember', db.addGroupMember);
 router.post('/api/group', db.createGroup);
 router.get('/api/checkcontacts/', db.CheckContacts);
 router.get('/api/getgroup', db.selectGroup);
