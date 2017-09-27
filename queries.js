@@ -194,7 +194,7 @@ function createGroup(req, res, next) {
           code: 'SUCCESS',
           data: data
         });
-        db.query('INSERT INTO groupmember (groupid, userid, master) values($1, $2, True)',[data[0].groupid, req.body.userid])
+        db.query('INSERT INTO groupmember (groupid, userid, master) values($1, $2, TRURE)',[data[0].groupid, req.body.userid])
         .then(function(data){
           console.log('runrun')
         })
@@ -230,7 +230,7 @@ function listGroup(req, res, next){
 }
 function selectGroup(req, res, next){
   console.log("group: " + req.query.groupid)
-  db.any('select groupmember.userid, username, userimage, lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.query.groupid])
+  db.any('select groupmember.userid, username, userimage, lat, lon, groupmember.master from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.query.groupid])
     .then(function (data) {
       if (data != null && data != '')  {
       res.status(200)
@@ -288,7 +288,7 @@ function addGroupMember(req, res, next) {
       });
   })
   .catch(function (err) {
-    db.query('INSERT INTO groupmember(groupid, userid, master) values($1,$2, False)',[req.body.groupid, req.body.userid])
+    db.query('INSERT INTO groupmember(groupid, userid, master) values($1,$2, FALSE)',[req.body.groupid, req.body.userid])
     .then(function(data) {
         res.status(200)
           .json({
