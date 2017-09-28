@@ -194,7 +194,7 @@ function createGroup(req, res, next) {
           code: 'SUCCESS',
           data: data
         });
-        db.query('INSERT INTO groupmember (groupid, userid, master) values($1, $2, TRURE)',[data[0].groupid, req.body.userid])
+        db.query('INSERT INTO groupmember (groupid, userid, master) values($1, $2, TRUE)',[data[0].groupid, req.body.userid])
         .then(function(data){
           console.log('runrun')
         })
