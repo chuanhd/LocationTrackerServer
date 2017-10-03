@@ -203,7 +203,7 @@ function createGroup(req, res, next) {
 }
 function listGroup(req, res, next){
   console.log(req.query.userid)
-  db.any('select groupname, grouplist.groupid from groupmember, grouplist where grouplist.groupid=groupmember.groupid and groupmember.userid=$1', [req.query.userid])
+  db.any('select groupname, grouplist.groupid, grouplist.lat, grouplist.lon from groupmember, grouplist where grouplist.groupid=groupmember.groupid and groupmember.userid=$1', [req.query.userid])
     .then(function (data) {
       if (data != null && data != '')  {
         res.status(200)
@@ -230,7 +230,7 @@ function listGroup(req, res, next){
 }
 function selectGroup(req, res, next){
   console.log("group: " + req.query.groupid)
-  db.any('select groupmember.userid, username, userimage, lat, lon, groupmember.master from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.query.groupid])
+  db.any('select groupmember.userid, username, userimage, userprofile.lat, userprofile.lon, groupmember.master from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1', [req.query.groupid])
     .then(function (data) {
       if (data != null && data != '')  {
       res.status(200)
@@ -398,12 +398,12 @@ function removeUser(req, res, next) {
 }
 
 function locationPick(req, res, next){
-db.query('INSERT INTO locationpick(lat, lon, userid, groupid) values($1,$2,$3,$4);',
-[req.body.lat, req.body.lon, req.body.userid, req.body.groupid])
+db.query('UPDATE grouplist set lat=$1, lon=$2 where groupid=$3',
+[req.body.lat, req.body.lon, eq.body.groupid])
   .then(function () {
     res.status(200)
       .json({
-        status: 'Inserted location pick',
+        status: 'Updated destination',
         code: 'SUCCESS'
       });
     })
