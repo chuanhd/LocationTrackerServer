@@ -319,7 +319,7 @@ function deleteGroupMember(req, res, next) {
 }
 
 function selectMemberLocation(req, res, next){
-  db.one('select lat, lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1 and groupmember.userid=$2',
+  db.one('select userprofile.lat, userprofile.lon from userprofile, groupmember, grouplist where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.groupid= $1 and groupmember.userid=$2',
   [req.query.groupid, req.query.userid])
     .then(function (data) {
         res.status(200)
