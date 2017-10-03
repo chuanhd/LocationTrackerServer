@@ -399,7 +399,7 @@ function removeUser(req, res, next) {
 
 function locationPick(req, res, next){
 db.query('UPDATE grouplist set lat=$1, lon=$2 where groupid=$3',
-[req.body.lat, req.body.lon, eq.body.groupid])
+[req.body.lat, req.body.lon, req.body.groupid])
   .then(function () {
     res.status(200)
       .json({
