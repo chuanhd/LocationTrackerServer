@@ -22,6 +22,7 @@ router.get('/api/memberlocation', db.selectMemberLocation);
 router.get('/api/memberinfo/', db.memberInfo);
 router.get('/api/searchuser/', db.searchUsers);
 router.post('/api/locationPick/', db.locationPick);
+router.post('/api/imageupload/', db.uploadImage);
 
 console.log(process.env.PORT)
 
