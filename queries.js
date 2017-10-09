@@ -395,8 +395,9 @@ db.query('UPDATE grouplist set lat=$1, lon=$2 where groupid=$3',
 }
 
 function uploadImage(req, res, next){
-db.query('INSERT INTO imagesupload(url, lat, lon, userid) values($1,$2,$3,$4);',
-[req.body.image, req.body.lat, req.body.lon, req.body.userid])
+  console.log('req.body.userid: ' + req.body.userid);
+db.query('INSERT INTO imagesupload(url, lat, lon, userid, groupid) values($1,$2,$3,$4, $5);',
+[req.body.image, req.body.lat, req.body.lon, req.body.userid, req.body.groupid])
   .then(function () {
     res.status(200)
       .json({
