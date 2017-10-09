@@ -19,6 +19,7 @@ router.get('/api/getgroup', db.selectGroup);
 router.get('/api/listgroup/', db.listGroup);
 router.delete('/api/deletemember/:userid', db.deleteGroupMember);
 router.get('/api/memberlocation', db.selectMemberLocation);
+router.get('/api/getimages/', db.getImage);
 router.get('/api/memberinfo/', db.memberInfo);
 router.get('/api/searchuser/', db.searchUsers);
 router.post('/api/locationPick/', db.locationPick);

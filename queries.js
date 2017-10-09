@@ -428,19 +428,20 @@ function uploadAvatar(req, res, next){
     console.log(req.file);
 }
 
-/*function selectImage(req, res, next){
-  db.one('select imagesupload.url, imagesupload.lat, imagesupload.lon, userprofile.username from userprofile, imagesupload where groupmember.userid=userprofile.userid and grouplist.groupid=groupmember.groupid and grouplist.usercreate= $1', [req.body.deviceid])
+function getImage(req, res, next){
+  db.any('select * from imagesupload where groupid=$1', [req.body.groupid])
     .then(function (data) {
         res.status(200)
           .json({
-            status: 'success',
+            status: 'Get images success',
+            code: 'SUCCESS',
             data: data
           });
     })
     .catch(function (err) {
       return next(err);
     });
-}*/
+}
 
 //CIRCLE
 //function createCircle
@@ -463,5 +464,6 @@ module.exports = {
   selectMemberLocation: selectMemberLocation,
   memberInfo: memberInfo,
   searchUsers: searchUsers, 
-  locationPick: locationPick
+  locationPick: locationPick,
+  getImage: getImage
 };
