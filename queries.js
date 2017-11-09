@@ -284,8 +284,9 @@ function addGroupMember(req, res, next) {
 }
 
 function deleteGroupMember(req, res, next) {
-  var userID = req.params.userid;
-  db.result('delete from groupmember where userid = $1', userID)
+  var userID = req.query.userid;
+  let groupID = req.query.groupid;
+  db.result('delete from groupmember where userid = $1 and groupid = $2', [userID, groupID])
     .then(function (result) {
       res.status(200)
         .json({

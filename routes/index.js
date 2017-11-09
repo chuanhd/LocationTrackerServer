@@ -17,7 +17,7 @@ router.post('/api/group/', db.createGroup);
 router.get('/api/checkcontacts/', db.CheckContacts);
 router.get('/api/getgroup', db.selectGroup); 
 router.get('/api/listgroup/', db.listGroup);
-router.delete('/api/deletemember/:userid', db.deleteGroupMember);
+router.delete('/api/deletemember', db.deleteGroupMember);
 router.get('/api/memberlocation', db.selectMemberLocation);
 router.get('/api/getimages/', db.getImage);
 router.get('/api/memberinfo/', db.memberInfo);
