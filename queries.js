@@ -284,7 +284,7 @@ function addGroupMember(req, res, next) {
 }
 
 function joinGroup(req, res, next){
-  db.one('select * from groupmember where groupid = $1', [req.body.groupid])
+  db.one('select * from grouplist where groupid = $1', [req.body.groupid])
   .then(function(){
     db.query('INSERT INTO groupmember(groupid, userid, master) values($1,$2, FALSE)',[req.body.groupid, req.body.userid])
     .then(function(data) {
