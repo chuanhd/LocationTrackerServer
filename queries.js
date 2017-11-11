@@ -285,13 +285,14 @@ function addGroupMember(req, res, next) {
 
 function joinGroup(req, res, next){
   db.one('select * from grouplist where groupid = $1', [req.body.groupid])
-  .then(function(){
+  .then(function(data){
     db.query('INSERT INTO groupmember(groupid, userid, master) values($1,$2, FALSE)',[req.body.groupid, req.body.userid])
-    .then(function(data) {
+    .then(function() {
       res.status(200)
         .json({
             status: 'Add new member success',
-            code: 'SUCCESS'
+            code: 'SUCCESS',
+            data : data
         });
     })
     .catch(function (err) {
