@@ -283,6 +283,30 @@ function addGroupMember(req, res, next) {
     });
 }
 
+function joinGroup(req, res, next){
+  db.one('select * from groupmember where groupid = $1', [req.body.groupid])
+  .then(function(){
+    db.query('INSERT INTO groupmember(groupid, userid, master) values($1,$2, FALSE)',[req.body.groupid, req.body.userid])
+    .then(function(data) {
+      res.status(200)
+        .json({
+            status: 'Add new member success',
+            code: 'SUCCESS'
+        });
+    })
+    .catch(function (err) {
+      return next(err);
+    });
+  })
+  .catch(function (err) {
+    res.status(200)
+    .json({
+        status: 'Failure. Dont have this group',
+        code: 'FAILURE'
+    });
+  });
+}
+
 function deleteGroupMember(req, res, next) {
   var userID = req.query.userid;
   let groupID = req.query.groupid;
@@ -466,5 +490,6 @@ module.exports = {
   memberInfo: memberInfo,
   searchUsers: searchUsers, 
   locationPick: locationPick,
-  getImage: getImage
+  getImage: getImage,
+  joinGroup: joinGroup
 };
