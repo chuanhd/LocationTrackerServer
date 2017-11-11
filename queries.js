@@ -184,7 +184,7 @@ function createGroup(req, res, next) {
 }
 function listGroup(req, res, next){
   console.log(req.query.userid)
-  db.any('select groupname, grouplist.groupid, grouplist.lat, grouplist.lon from groupmember, grouplist where grouplist.groupid=groupmember.groupid and groupmember.userid=$1', [req.query.userid])
+  db.any('select groupname, grouplist.groupid, grouplist.lat, grouplist.lon, grouplist.description, grouplist.userid from groupmember, grouplist where grouplist.groupid=groupmember.groupid and groupmember.userid=$1', [req.query.userid])
     .then(function (data) {
       if (data != null && data != '')  {
         res.status(200)
