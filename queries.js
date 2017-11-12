@@ -284,6 +284,15 @@ function addGroupMember(req, res, next) {
 }
 
 function joinGroup(req, res, next){
+  db.one('select * from groupmember where groupid = $1 and userid = $2', [req.body.groupid, req.body.userid])
+  .then(function (){
+    res.status(200)
+      .json({
+        status: 'User is already in group',
+        code: 'USER_IN_GROUP'
+      });
+  })
+  .catch(function (err) {
   db.one('select * from grouplist where groupid = $1', [req.body.groupid])
   .then(function(data){
     db.query('INSERT INTO groupmember(groupid, userid, master) values($1,$2, FALSE)',[req.body.groupid, req.body.userid])
@@ -305,6 +314,7 @@ function joinGroup(req, res, next){
         status: 'Failure. Dont have this group',
         code: 'FAILURE'
     });
+  });
   });
 }
 
