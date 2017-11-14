@@ -465,7 +465,7 @@ function uploadAvatar(req, res, next){
 }
 
 function getImage(req, res, next){
-  db.any('select url, lat, lon, userid from imagesupload where groupid=$1;', [req.query.groupid])
+  db.any('select imagesupload.url, imagesupload.lat, imagesupload.lon, userprofile.username as author from imagesupload, userprofile where imagesupload.userid=userprofile.userid and groupid=$1;', [req.query.groupid])
     .then(function (data) {
         res.status(200)
           .json({
