@@ -23,6 +23,9 @@ router.get('/api/memberlocation', db.selectMemberLocation);
 router.get('/api/getimages/', db.getImage);
 router.get('/api/memberinfo/', db.memberInfo);
 router.get('/api/searchuser/', db.searchUsers);
+router.post('/api/checkEmail/',db.checkEmail);
+router.post('/api/checkPhoneNumber/', db.checkPhoneNumber);
+router.post('/api/checkUsername/', db.checkUsername);
 router.post('/api/locationPick/', db.locationPick);
 router.post('/api/imageupload/', db.uploadImage);
 

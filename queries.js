@@ -367,6 +367,73 @@ function memberInfo(req, res, next){
     });
 }
 
+function checkUsername(req, res, next){
+  db.any('select username from userprofile where username like $1',['%'+req.body.username+'%'])
+  .then(function(data){
+    if (data!= null && data != ''){
+      res.status(200)
+        .json({
+          status: 'Username already exist',
+          code: 'FAILURE'
+        });
+    } else {
+      res.status(200)
+        .json({
+            status: 'Username not use',
+            code: 'SUCCESS'
+        });
+    }
+  })
+  .catch(function(err){
+    return next(err);
+  });
+}
+
+function checkEmail(req, res, next){
+  db.any('select userid from userprofile where email like $1',['%'+req.body.email+'%'])
+  .then(function(data){
+    if (data!= null && data != ''){
+      res.status(200)
+        .json({
+          status: 'Email already exist',
+          code: 'FAILURE'
+        });
+    } else {
+      res.status(200)
+        .json({
+            status: 'Email not use',
+            code: 'SUCCESS'
+        });
+    }
+  })
+  .catch(function(err){
+    return next(err);
+  });
+}
+
+function checkPhoneNumber(req, res, next){
+  db.any('select userid from userprofile where phonenumber like $1',['%'+req.body.phonenumber+'%'])
+  .then(function(data){
+    if (data!= null && data != ''){
+      res.status(200)
+        .json({
+          status: 'Phonenumber already exist',
+          code: 'FAILURE'
+        });
+    } else {
+      res.status(200)
+        .json({
+            status: 'Phonenumber not use',
+            code: 'SUCCESS'
+        });
+    }
+  })
+  .catch(function(err){
+    return next(err);
+  });
+
+}
+
 function updateUser(req, res, next) {
   db.query('update userprofile set username=$1, userimage=$2, email=$3, lat=$4, lon=$5, phonenumber=$6 where userid=$7',
     [req.body.username, req.body.userimage, req.body.email, req.body.lat, req.body.lon,
@@ -502,5 +569,8 @@ module.exports = {
   searchUsers: searchUsers, 
   locationPick: locationPick,
   getImage: getImage,
-  joinGroup: joinGroup
+  joinGroup: joinGroup,
+  checkEmail: checkEmail,
+  checkPhoneNumber: checkPhoneNumber,
+  checkUsername : checkUsername
 };
