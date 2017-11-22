@@ -28,6 +28,7 @@ router.post('/api/checkPhoneNumber/', db.checkPhoneNumber);
 router.post('/api/checkUsername/', db.checkUsername);
 router.post('/api/locationPick/', db.locationPick);
 router.post('/api/imageupload/', db.uploadImage);
+router.get('/api/group/getDestination', db.getGroupDestination);
 
 console.log(process.env.PORT)
 

@@ -234,6 +234,21 @@ function selectGroup(req, res, next){
     });
 }
 
+function getGroupDestination(req, res, next) {
+  db.one('select lat, lon from grouplist where groupid = $1', [req.query.groupid])
+  .then(function(data) {
+    res.status(200)
+      .json({
+        status: 'Get group destination successfully',
+        code: 'SUCCESS',
+        data: data
+    });
+  })
+  .catch(function(err){
+    return next(err);
+  }); 
+}
+
 function searchUsers(req, res, next){
   console.log("search string: " + req.query.search_string)
   // console.log("query string: " + )
@@ -572,5 +587,6 @@ module.exports = {
   joinGroup: joinGroup,
   checkEmail: checkEmail,
   checkPhoneNumber: checkPhoneNumber,
-  checkUsername : checkUsername
+  checkUsername : checkUsername,
+  getGroupDestination : getGroupDestination
 };
